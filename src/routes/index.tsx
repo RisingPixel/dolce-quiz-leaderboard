@@ -39,6 +39,9 @@ async function fetchTop20(): Promise<Entry[]> {
 }
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    video: search.video === true || search.video === "true",
+  }),
   head: () => ({
     meta: [
       { title: "La Dolce Quiz — Classifica Evento" },
@@ -53,6 +56,7 @@ export const Route = createFileRoute("/")({
 
 
 function Leaderboard() {
+  const { video: videoEnabled } = Route.useSearch();
   const { data = [], dataUpdatedAt } = useQuery({
     queryKey: ["leaderboard-top20"],
     queryFn: fetchTop20,
@@ -69,6 +73,7 @@ function Leaderboard() {
 
   // Force preload as soon as the page mounts
   useEffect(() => {
+    if (!videoEnabled) return;
     const video = videoRef.current;
     if (!video) return;
     try {
@@ -86,7 +91,7 @@ function Leaderboard() {
       video.removeEventListener("canplaythrough", onReady);
       video.removeEventListener("canplay", onReady);
     };
-  }, []);
+  }, [videoEnabled]);
 
   // Check whether the video has enough buffered data from currentTime to play
   // for `seconds` without re-buffering.
@@ -104,6 +109,10 @@ function Leaderboard() {
 
   // Mode timer: leaderboard → video (only if buffered enough), video → leaderboard.
   useEffect(() => {
+    if (!videoEnabled) {
+      if (mode !== "leaderboard") setMode("leaderboard");
+      return;
+    }
     let cancelled = false;
     const cleanups: Array<() => void> = [];
     const duration = mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS;
@@ -148,7 +157,7 @@ function Leaderboard() {
       clearTimeout(timer);
       cleanups.forEach((fn) => fn());
     };
-  }, [mode]);
+  }, [mode, videoEnabled]);
 
   // Play / pause + stall watchdog while in video mode.
   useEffect(() => {
@@ -218,23 +227,25 @@ function Leaderboard() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Video panel — always mounted to preserve playback position */}
-      <div
-        className={[
-          "absolute inset-0 bg-black transition-opacity duration-700",
-          mode === "video" ? "opacity-100" : "opacity-0 pointer-events-none",
-        ].join(" ")}
-      >
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover"
-          style={{ pointerEvents: "none" }}
+      {videoEnabled && (
+        <div
+          className={[
+            "absolute inset-0 bg-black transition-opacity duration-700",
+            mode === "video" ? "opacity-100" : "opacity-0 pointer-events-none",
+          ].join(" ")}
         >
-          <source src={PROMO_VIDEO_SRC} type="video/mp4" />
-        </video>
-      </div>
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
+            style={{ pointerEvents: "none" }}
+          >
+            <source src={PROMO_VIDEO_SRC} type="video/mp4" />
+          </video>
+        </div>
+      )}
 
       {/* Leaderboard panel */}
       <main
