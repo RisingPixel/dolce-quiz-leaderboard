@@ -22,9 +22,18 @@ async function fetchTop20(): Promise<Entry[]> {
     .select("id, name, score, created_at")
     .order("score", { ascending: false })
     .order("created_at", { ascending: true })
-    .limit(20);
+    .limit(200);
   if (error) throw error;
-  return data ?? [];
+  const seen = new Set<string>();
+  const deduped: Entry[] = [];
+  for (const e of data ?? []) {
+    const key = e.name.trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(e);
+    if (deduped.length >= 20) break;
+  }
+  return deduped;
 }
 
 export const Route = createFileRoute("/")({
