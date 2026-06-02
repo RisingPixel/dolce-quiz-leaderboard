@@ -73,6 +73,7 @@ function Leaderboard() {
 
   // Force preload as soon as the page mounts
   useEffect(() => {
+    if (!videoEnabled) return;
     const video = videoRef.current;
     if (!video) return;
     try {
@@ -90,7 +91,7 @@ function Leaderboard() {
       video.removeEventListener("canplaythrough", onReady);
       video.removeEventListener("canplay", onReady);
     };
-  }, []);
+  }, [videoEnabled]);
 
   // Check whether the video has enough buffered data from currentTime to play
   // for `seconds` without re-buffering.
