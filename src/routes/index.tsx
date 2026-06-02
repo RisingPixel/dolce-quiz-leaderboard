@@ -356,6 +356,28 @@ function Leaderboard() {
           Scan to play
         </p>
       </div>
+
+      {/* Animated hand pointer that alternates between the two QR codes */}
+      <div
+        aria-hidden
+        className="hidden md:block fixed pointer-events-none transition-all duration-500 ease-out"
+        style={{
+          bottom: "17.5rem",
+          left: pointerSide === "left" ? "88px" : "auto",
+          right: pointerSide === "right" ? "88px" : "auto",
+        }}
+      >
+        <span
+          className="pointer-bounce block leading-none"
+          style={{
+            fontSize: "96px",
+            filter: "drop-shadow(0 4px 14px oklch(0.82 0.12 80 / 0.7))",
+          }}
+        >
+          👇
+        </span>
+      </div>
+
       </main>
     </div>
   );
