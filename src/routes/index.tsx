@@ -109,6 +109,10 @@ function Leaderboard() {
 
   // Mode timer: leaderboard → video (only if buffered enough), video → leaderboard.
   useEffect(() => {
+    if (!videoEnabled) {
+      if (mode !== "leaderboard") setMode("leaderboard");
+      return;
+    }
     let cancelled = false;
     const cleanups: Array<() => void> = [];
     const duration = mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS;
