@@ -166,7 +166,7 @@ function Leaderboard() {
                 <div
                   key={e.id}
                   className={[
-                    "grid grid-cols-[120px_1fr_220px] items-center px-8 py-5 text-3xl xl:text-4xl",
+                    "grid grid-cols-[120px_1fr_220px] items-center px-8 py-3 text-2xl xl:text-3xl",
                     "border-b border-[var(--gold)]/10 last:border-b-0",
                     isTop1
                       ? "bg-[var(--accent)]/15 text-[var(--cream)]"
@@ -179,9 +179,9 @@ function Leaderboard() {
                     className={[
                       "font-display",
                       isTop1
-                        ? "text-[var(--accent)] text-5xl"
+                        ? "text-[var(--accent)] text-4xl"
                         : isTop3
-                        ? "text-[var(--gold)] text-4xl"
+                        ? "text-[var(--gold)] text-3xl"
                         : "text-[var(--cream)]/60",
                     ].join(" ")}
                   >
