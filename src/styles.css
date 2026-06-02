@@ -104,3 +104,13 @@
 .auto-scroll {
   animation: scroll-y 20s linear infinite alternate;
 }
+
+@keyframes pointer-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-16px) scale(1.15); }
+}
+
+.pointer-bounce {
+  animation: pointer-bounce 1s ease-in-out infinite;
+  transform-origin: center bottom;
+}
