@@ -227,23 +227,25 @@ function Leaderboard() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Video panel — always mounted to preserve playback position */}
-      <div
-        className={[
-          "absolute inset-0 bg-black transition-opacity duration-700",
-          mode === "video" ? "opacity-100" : "opacity-0 pointer-events-none",
-        ].join(" ")}
-      >
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover"
-          style={{ pointerEvents: "none" }}
+      {videoEnabled && (
+        <div
+          className={[
+            "absolute inset-0 bg-black transition-opacity duration-700",
+            mode === "video" ? "opacity-100" : "opacity-0 pointer-events-none",
+          ].join(" ")}
         >
-          <source src={PROMO_VIDEO_SRC} type="video/mp4" />
-        </video>
-      </div>
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
+            style={{ pointerEvents: "none" }}
+          >
+            <source src={PROMO_VIDEO_SRC} type="video/mp4" />
+          </video>
+        </div>
+      )}
 
       {/* Leaderboard panel */}
       <main
