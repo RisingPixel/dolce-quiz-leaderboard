@@ -3,6 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+const PROMO_VIDEO_SRC =
+  "https://github.com/RisingPixel/dolce-quiz-leaderboard/releases/download/1.0/rppromo.mp4";
+const ROTATION_MS = 15_000;
+
+type DisplayMode = "leaderboard" | "video";
+
 type Entry = {
   id: string;
   name: string;
@@ -41,7 +47,26 @@ function Leaderboard() {
 
   const listRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
+  const [mode, setMode] = useState<DisplayMode>("leaderboard");
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMode((m) => (m === "leaderboard" ? "video" : "leaderboard"));
+    }, ROTATION_MS);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (mode === "video") {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [mode]);
 
   useEffect(() => {
     const measure = () => {
@@ -61,7 +86,32 @@ function Leaderboard() {
     : "—";
 
   return (
-    <main className="min-h-screen w-full px-12 py-10 flex flex-col gap-8">
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* Video panel — always mounted to preserve playback position */}
+      <div
+        className={[
+          "absolute inset-0 bg-black transition-opacity duration-700",
+          mode === "video" ? "opacity-100" : "opacity-0 pointer-events-none",
+        ].join(" ")}
+      >
+        <video
+          ref={videoRef}
+          src={PROMO_VIDEO_SRC}
+          muted
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+          style={{ pointerEvents: "none" }}
+        />
+      </div>
+
+      {/* Leaderboard panel */}
+      <main
+        className={[
+          "absolute inset-0 px-12 py-10 flex flex-col gap-8 transition-opacity duration-700",
+          mode === "leaderboard" ? "opacity-100" : "opacity-0 pointer-events-none",
+        ].join(" ")}
+      >
       <header className="text-center">
         <h1
           className="font-display text-7xl xl:text-8xl tracking-wide text-[var(--cream)]"
@@ -148,6 +198,7 @@ function Leaderboard() {
           Scan to play
         </p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }
