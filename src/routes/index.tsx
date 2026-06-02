@@ -64,12 +64,54 @@ function Leaderboard() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
   const [mode, setMode] = useState<DisplayMode>("leaderboard");
+  const videoReadyRef = useRef(false);
+
+  // Force preload as soon as the page mounts
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      video.load();
+    } catch (e) {
+      console.error("[promo] preload failed:", e);
+    }
+    const onReady = () => {
+      videoReadyRef.current = true;
+    };
+    video.addEventListener("canplaythrough", onReady);
+    video.addEventListener("canplay", onReady);
+    if (video.readyState >= 3) videoReadyRef.current = true;
+    return () => {
+      video.removeEventListener("canplaythrough", onReady);
+      video.removeEventListener("canplay", onReady);
+    };
+  }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const duration = mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS;
     const timer = setTimeout(() => {
+      if (cancelled) return;
+      // If we're about to show the video but it's not buffered yet, wait for it
+      if (mode === "leaderboard" && !videoReadyRef.current) {
+        const video = videoRef.current;
+        if (video) {
+          const onReady = () => {
+            video.removeEventListener("canplaythrough", onReady);
+            video.removeEventListener("canplay", onReady);
+            if (!cancelled) setMode("video");
+          };
+          video.addEventListener("canplaythrough", onReady);
+          video.addEventListener("canplay", onReady);
+          return;
+        }
+      }
       setMode((m) => (m === "leaderboard" ? "video" : "leaderboard"));
-    }, mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS);
-    return () => clearTimeout(timer);
+    }, duration);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [mode]);
 
   useEffect(() => {
@@ -81,6 +123,7 @@ function Leaderboard() {
       video.pause();
     }
   }, [mode]);
+
 
   useEffect(() => {
     const measure = () => {
