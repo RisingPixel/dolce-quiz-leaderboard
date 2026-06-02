@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 const PROMO_VIDEO_SRC =
   "https://github.com/RisingPixel/dolce-quiz-leaderboard/releases/download/1.0/rppromo.mp4";
 const LEADERBOARD_MS = 20_000;
-const VIDEO_MS = 15_000;
+const VIDEO_MS = 10_000;
 const VIDEO_STALL_TIMEOUT_MS = 3_000;
 
 type DisplayMode = "leaderboard" | "video";
