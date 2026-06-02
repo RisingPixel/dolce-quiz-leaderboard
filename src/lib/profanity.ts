@@ -1,22 +1,32 @@
-// Minimal profanity filter for Italian and English. Returns true if name is OK.
-const BAD_WORDS = [
-  "merda", "cazzo", "stronzo", "stronza", "puttana", "vaffanculo", "fanculo",
-  "bastardo", "bastarda", "coglione", "coglioni", "troia", "porca", "negro",
-  "frocio", "checca", "minchia", "figa", "fica", "culo",
+// Short/ambiguous words verified only as exact tokens — substring match would cause false
+// positives (e.g. "negro" in "Montenegro", "troia" in "Troiano", "culo" in Latin words).
+const TOKEN_ONLY_WORDS = new Set([
+  "negro", "troia", "porca", "porco", "figa", "fica", "culo", "checca", "cagna",
+]);
+
+// Longer, specific words safe for substring matching — also catches compound forms
+// like "stronzetto", "merdaccia", "affanculone".
+const SUBSTRING_WORDS = [
+  // Italian
+  "merda", "cazzo", "stronzo", "stronza", "puttana", "vaffanculo", "fanculo", "affanculo",
+  "bastardo", "bastarda", "coglione", "coglioni", "frocio", "minchia",
+  "cornuto", "cornuta", "mignotta", "zoccola", "baldracca", "ricchione", "porcodio",
+  // English
   "fuck", "shit", "bitch", "asshole", "cunt", "dick", "pussy", "nigger",
   "faggot", "whore", "slut", "bastard",
 ];
 
 export function isCleanName(name: string): boolean {
   const lower = name.toLowerCase();
-  // Word-boundary-ish check: split on non-letter chars
   const tokens = lower.split(/[^\p{L}]+/u).filter(Boolean);
+
   for (const t of tokens) {
-    if (BAD_WORDS.includes(t)) return false;
+    if (TOKEN_ONLY_WORDS.has(t)) return false;
   }
-  // also catch concatenated forms
-  for (const w of BAD_WORDS) {
+
+  for (const w of SUBSTRING_WORDS) {
     if (lower.includes(w)) return false;
   }
+
   return true;
 }
