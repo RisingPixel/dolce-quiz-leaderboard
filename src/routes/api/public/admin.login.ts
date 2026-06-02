@@ -1,14 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { safeEqual } from "@/lib/safe-equal";
 
 const schema = z.object({ password: z.string().min(1) });
-
-function safeEqual(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return r === 0;
-}
 
 export const Route = createFileRoute("/api/public/admin/login")({
   server: {
