@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const PROMO_VIDEO_SRC =
   "https://github.com/RisingPixel/dolce-quiz-leaderboard/releases/download/1.0/rppromo.mp4";
-const ROTATION_MS = 15_000;
+const LEADERBOARD_MS = 20_000;
+const VIDEO_MS = 15_000;
 
 type DisplayMode = "leaderboard" | "video";
 
@@ -61,11 +62,11 @@ function Leaderboard() {
   const [mode, setMode] = useState<DisplayMode>("leaderboard");
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       setMode((m) => (m === "leaderboard" ? "video" : "leaderboard"));
-    }, ROTATION_MS);
-    return () => clearInterval(timer);
-  }, []);
+    }, mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS);
+    return () => clearTimeout(timer);
+  }, [mode]);
 
   useEffect(() => {
     const video = videoRef.current;
