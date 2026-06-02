@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,108 @@ function AdminPage() {
     sessionStorage.removeItem(STORAGE_KEY);
     setPassword(null);
   }} />;
+}
+
+function randomName() {
+  return `Test_${Math.floor(Math.random() * 1000)}`;
+}
+
+const SCORE_PRESETS = [100, 500, 1_000, 5_000, 10_000];
+
+function TestScorePanel({ queryClient }: { queryClient: QueryClient }) {
+  const [name, setName] = useState(randomName());
+  const [score, setScore] = useState(500);
+  const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function submit() {
+    setStatus(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/public/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, score }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setStatus({ ok: false, msg: json.error ?? `Errore ${res.status}` });
+        return;
+      }
+      setStatus({ ok: true, msg: `Inviato! ID: ${json.id}` });
+      setName(randomName());
+      await queryClient.invalidateQueries({ queryKey: ["leaderboard-all"] });
+    } catch {
+      setStatus({ ok: false, msg: "Errore di rete" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="mb-8 rounded-xl border border-[var(--gold)]/15 bg-[var(--teal-deep)]/40 p-5">
+      <h2 className="font-display text-xl text-[var(--gold)] mb-4">Test Punteggio</h2>
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--cream)]/60 uppercase tracking-wider">Nome</label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={30}
+            className="w-40"
+            placeholder="Nome"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--cream)]/60 uppercase tracking-wider">Punteggio</label>
+          <Input
+            type="number"
+            value={score}
+            onChange={(e) => setScore(Number(e.target.value))}
+            min={0}
+            max={1_000_000}
+            className="w-32"
+          />
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {SCORE_PRESETS.map((p) => (
+            <Button
+              key={p}
+              variant="secondary"
+              size="sm"
+              onClick={() => setScore(p)}
+              className={score === p ? "ring-1 ring-[var(--gold)]" : ""}
+            >
+              {p.toLocaleString("it-IT")}
+            </Button>
+          ))}
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setName(randomName());
+            setScore(Math.floor(Math.random() * 10_000) + 1);
+            setStatus(null);
+          }}
+        >
+          Casuale
+        </Button>
+        <Button
+          disabled={loading || !name.trim()}
+          onClick={submit}
+          size="sm"
+        >
+          {loading ? "Invio…" : "Invia"}
+        </Button>
+      </div>
+      {status && (
+        <p className={`mt-3 text-sm ${status.ok ? "text-green-400" : "text-[var(--destructive)]"}`}>
+          {status.msg}
+        </p>
+      )}
+    </section>
+  );
 }
 
 function LoginForm({ onAuth }: { onAuth: (pw: string) => void }) {
@@ -132,6 +234,8 @@ function AdminTable({ password, onLogout }: { password: string; onLogout: () => 
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-5xl mx-auto">
+      <TestScorePanel queryClient={qc} />
+
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-4xl text-[var(--cream)]">La Dolce Quiz · Admin</h1>
