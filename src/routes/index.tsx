@@ -69,7 +69,16 @@ function Leaderboard() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
   const [mode, setMode] = useState<DisplayMode>("leaderboard");
+  const [pointerSide, setPointerSide] = useState<"left" | "right">("left");
   const videoReadyRef = useRef(false);
+
+  // Alternate the QR pointer hand every 2.5s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPointerSide((s) => (s === "left" ? "right" : "left"));
+    }, 2500);
+    return () => clearInterval(id);
+  }, []);
 
   // Force preload as soon as the page mounts
   useEffect(() => {
