@@ -136,7 +136,7 @@ function Leaderboard() {
       </header>
 
       <section className="flex-1 mx-auto w-full max-w-5xl flex flex-col">
-        <div className="grid grid-cols-[120px_1fr_220px] px-8 pb-3 text-xl font-semibold uppercase tracking-[0.2em] text-[var(--gold)]/80">
+        <div className="grid grid-cols-[120px_1fr_220px] px-8 pb-2 text-lg font-semibold uppercase tracking-[0.2em] text-[var(--gold)]/80">
           <div>Pos.</div>
           <div>Nome</div>
           <div className="text-right">Punteggio</div>
