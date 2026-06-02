@@ -62,7 +62,7 @@ function Leaderboard() {
     const video = videoRef.current;
     if (!video) return;
     if (mode === "video") {
-      video.play().catch(() => {});
+      video.play().catch((e) => console.error("[promo] autoplay blocked:", e));
     } else {
       video.pause();
     }
