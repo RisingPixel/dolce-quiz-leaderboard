@@ -192,7 +192,8 @@ function Leaderboard() {
 
         <div
           ref={listRef}
-          className="flex-1 overflow-hidden rounded-2xl border border-[var(--gold)]/15 bg-[var(--teal-deep)]/40 backdrop-blur-sm"
+          className="overflow-hidden rounded-2xl border border-[var(--gold)]/15 bg-[var(--teal-deep)]/40 backdrop-blur-sm"
+          style={{ maxHeight: "min(70vh, 720px)", height: "min(70vh, 720px)" }}
         >
           <div
             ref={innerRef}
