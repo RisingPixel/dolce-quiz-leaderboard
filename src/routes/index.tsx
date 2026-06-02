@@ -56,6 +56,7 @@ export const Route = createFileRoute("/")({
 
 
 function Leaderboard() {
+  const { video: videoEnabled } = Route.useSearch();
   const { data = [], dataUpdatedAt } = useQuery({
     queryKey: ["leaderboard-top20"],
     queryFn: fetchTop20,
