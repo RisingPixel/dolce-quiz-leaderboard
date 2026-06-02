@@ -9,38 +9,101 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicScoreRouteImport } from './routes/api/public/score'
+import { Route as ApiPublicAdminLoginRouteImport } from './routes/api/public/admin.login'
+import { Route as ApiPublicAdminDeleteRouteImport } from './routes/api/public/admin.delete'
 
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicScoreRoute = ApiPublicScoreRouteImport.update({
+  id: '/api/public/score',
+  path: '/api/public/score',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAdminLoginRoute = ApiPublicAdminLoginRouteImport.update({
+  id: '/api/public/admin/login',
+  path: '/api/public/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAdminDeleteRoute = ApiPublicAdminDeleteRouteImport.update({
+  id: '/api/public/admin/delete',
+  path: '/api/public/admin/delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/score': typeof ApiPublicScoreRoute
+  '/api/public/admin/delete': typeof ApiPublicAdminDeleteRoute
+  '/api/public/admin/login': typeof ApiPublicAdminLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/score': typeof ApiPublicScoreRoute
+  '/api/public/admin/delete': typeof ApiPublicAdminDeleteRoute
+  '/api/public/admin/login': typeof ApiPublicAdminLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/score': typeof ApiPublicScoreRoute
+  '/api/public/admin/delete': typeof ApiPublicAdminDeleteRoute
+  '/api/public/admin/login': typeof ApiPublicAdminLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/api/public/score'
+    | '/api/public/admin/delete'
+    | '/api/public/admin/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/api/public/score'
+    | '/api/public/admin/delete'
+    | '/api/public/admin/login'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/api/public/score'
+    | '/api/public/admin/delete'
+    | '/api/public/admin/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ApiPublicScoreRoute: typeof ApiPublicScoreRoute
+  ApiPublicAdminDeleteRoute: typeof ApiPublicAdminDeleteRoute
+  ApiPublicAdminLoginRoute: typeof ApiPublicAdminLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +111,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/score': {
+      id: '/api/public/score'
+      path: '/api/public/score'
+      fullPath: '/api/public/score'
+      preLoaderRoute: typeof ApiPublicScoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/admin/login': {
+      id: '/api/public/admin/login'
+      path: '/api/public/admin/login'
+      fullPath: '/api/public/admin/login'
+      preLoaderRoute: typeof ApiPublicAdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/admin/delete': {
+      id: '/api/public/admin/delete'
+      path: '/api/public/admin/delete'
+      fullPath: '/api/public/admin/delete'
+      preLoaderRoute: typeof ApiPublicAdminDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ApiPublicScoreRoute: ApiPublicScoreRoute,
+  ApiPublicAdminDeleteRoute: ApiPublicAdminDeleteRoute,
+  ApiPublicAdminLoginRoute: ApiPublicAdminLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
