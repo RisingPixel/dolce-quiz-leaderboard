@@ -118,25 +118,25 @@ function Leaderboard() {
       {/* Leaderboard panel */}
       <main
         className={[
-          "absolute inset-0 px-12 py-10 flex flex-col gap-8 transition-opacity duration-700",
+          "absolute inset-0 px-12 py-6 flex flex-col gap-4 transition-opacity duration-700",
           mode === "leaderboard" ? "opacity-100" : "opacity-0 pointer-events-none",
         ].join(" ")}
       >
       <header className="text-center">
         <h1
-          className="font-display text-7xl xl:text-8xl tracking-wide text-[var(--cream)]"
+          className="font-display text-6xl xl:text-7xl tracking-wide text-[var(--cream)]"
           style={{ textShadow: "0 2px 30px oklch(0.18 0.04 190 / 0.7)" }}
         >
           La Dolce <span className="italic text-[var(--gold)]">Quiz</span>
         </h1>
-        <p className="font-display text-3xl xl:text-4xl text-[var(--cream)]/80 italic mt-1">
+        <p className="font-display text-2xl xl:text-3xl text-[var(--cream)]/80 italic mt-1">
           Classifica Evento
         </p>
         <div className="mx-auto mt-4 h-px w-72 bg-gradient-to-r from-transparent via-[var(--gold)]/60 to-transparent" />
       </header>
 
       <section className="flex-1 mx-auto w-full max-w-5xl flex flex-col">
-        <div className="grid grid-cols-[120px_1fr_220px] px-8 pb-3 text-xl font-semibold uppercase tracking-[0.2em] text-[var(--gold)]/80">
+        <div className="grid grid-cols-[120px_1fr_220px] px-8 pb-2 text-lg font-semibold uppercase tracking-[0.2em] text-[var(--gold)]/80">
           <div>Pos.</div>
           <div>Nome</div>
           <div className="text-right">Punteggio</div>
@@ -166,7 +166,7 @@ function Leaderboard() {
                 <div
                   key={e.id}
                   className={[
-                    "grid grid-cols-[120px_1fr_220px] items-center px-8 py-5 text-3xl xl:text-4xl",
+                    "grid grid-cols-[120px_1fr_220px] items-center px-8 py-3 text-2xl xl:text-3xl",
                     "border-b border-[var(--gold)]/10 last:border-b-0",
                     isTop1
                       ? "bg-[var(--accent)]/15 text-[var(--cream)]"
@@ -179,9 +179,9 @@ function Leaderboard() {
                     className={[
                       "font-display",
                       isTop1
-                        ? "text-[var(--accent)] text-5xl"
+                        ? "text-[var(--accent)] text-4xl"
                         : isTop3
-                        ? "text-[var(--gold)] text-4xl"
+                        ? "text-[var(--gold)] text-3xl"
                         : "text-[var(--cream)]/60",
                     ].join(" ")}
                   >
