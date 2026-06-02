@@ -43,9 +43,13 @@ export const Route = createFileRoute("/")({
       { title: "La Dolce Quiz — Classifica Evento" },
       { name: "description", content: "Classifica live de La Dolce Quiz." },
     ],
+    links: [
+      { rel: "preload", as: "video", href: PROMO_VIDEO_SRC, type: "video/mp4" },
+    ],
   }),
   component: Leaderboard,
 });
+
 
 function Leaderboard() {
   const { data = [], dataUpdatedAt } = useQuery({
