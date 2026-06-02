@@ -157,7 +157,7 @@ function Leaderboard() {
       clearTimeout(timer);
       cleanups.forEach((fn) => fn());
     };
-  }, [mode]);
+  }, [mode, videoEnabled]);
 
   // Play / pause + stall watchdog while in video mode.
   useEffect(() => {
