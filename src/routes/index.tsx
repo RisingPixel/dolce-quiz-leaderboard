@@ -96,13 +96,14 @@ function Leaderboard() {
       >
         <video
           ref={videoRef}
-          src={PROMO_VIDEO_SRC}
           muted
           playsInline
           preload="auto"
           className="w-full h-full object-cover"
           style={{ pointerEvents: "none" }}
-        />
+        >
+          <source src={PROMO_VIDEO_SRC} type="video/mp4" />
+        </video>
       </div>
 
       {/* Leaderboard panel */}
