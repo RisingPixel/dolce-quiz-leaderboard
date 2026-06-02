@@ -1,18 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { safeEqual } from "@/lib/safe-equal";
 
 const schema = z.object({
   password: z.string().min(1),
   id: z.string().uuid(),
 });
-
-function safeEqual(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return r === 0;
-}
 
 export const Route = createFileRoute("/api/public/admin/delete")({
   server: {
@@ -39,14 +33,19 @@ export const Route = createFileRoute("/api/public/admin/delete")({
           return Response.json({ success: false, error: "Unauthorized" }, { status: 401 });
         }
 
-        const { error } = await supabaseAdmin
+        const { data, error } = await supabaseAdmin
           .from("leaderboard_entries")
           .delete()
-          .eq("id", parsed.data.id);
+          .eq("id", parsed.data.id)
+          .select("id");
 
         if (error) {
           console.error("Delete failed:", error);
           return Response.json({ success: false, error: "Database error" }, { status: 500 });
+        }
+
+        if (!data || data.length === 0) {
+          return Response.json({ success: false, error: "Not found" }, { status: 404 });
         }
 
         return Response.json({ success: true });

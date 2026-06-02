@@ -100,7 +100,7 @@ function LoginForm({ onAuth }: { onAuth: (pw: string) => void }) {
 
 function AdminTable({ password, onLogout }: { password: string; onLogout: () => void }) {
   const qc = useQueryClient();
-  const { data = [], isLoading, refetch } = useQuery({
+  const { data = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["leaderboard-all"],
     queryFn: fetchAll,
   });
@@ -157,7 +157,10 @@ function AdminTable({ password, onLogout }: { password: string; onLogout: () => 
             {isLoading && (
               <tr><td colSpan={4} className="px-4 py-8 text-center text-[var(--cream)]/60">Caricamento…</td></tr>
             )}
-            {!isLoading && data.length === 0 && (
+            {isError && (
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-[var(--destructive)]">Errore nel caricamento dei dati. Riprova.</td></tr>
+            )}
+            {!isLoading && !isError && data.length === 0 && (
               <tr><td colSpan={4} className="px-4 py-8 text-center text-[var(--cream)]/60">Nessuna voce</td></tr>
             )}
             {data.map((e) => (
