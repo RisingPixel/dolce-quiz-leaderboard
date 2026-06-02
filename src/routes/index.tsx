@@ -141,6 +141,13 @@ function Leaderboard() {
           Ultimo aggiornamento: {updated} · si aggiorna ogni 5 secondi
         </p>
       </section>
+
+      <div className="fixed bottom-6 right-6 flex flex-col items-center gap-2 rounded-2xl bg-white p-3 shadow-[0_8px_40px_oklch(0.1_0.04_185/0.5)]">
+        <img src="/qr.png" alt="QR code per giocare" width={144} height={144} />
+        <p className="font-display text-base font-semibold tracking-widest uppercase text-[var(--teal-deep)]">
+          Scan to play
+        </p>
+      </div>
     </main>
   );
 }
