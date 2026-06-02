@@ -1,19 +1,10 @@
-Ho testato la preview desktop a 1920×1080 e il motivo è chiaro: la classifica riceve 13 righe dal backend, ma tutte e 13 entrano già nel riquadro visibile. Il codice avvia l’animazione solo quando c’è overflow verticale (`scrollDistance < 0`), quindi attualmente non parte perché non c’è nulla da far scorrere.
+Aggiungere un parametro querystring `?video=` alla route `/` per abilitare o disabilitare il pannello video promozionale.
 
-Piano di intervento:
+Cosa cambia:
+- Aggiungere `validateSearch` con schema Zod alla route `/`.
+- Parametro `video: z.boolean().default(false)`.
+- Nel componente `Leaderboard`, leggere `video` da `Route.useSearch()`.
+- Quando `video === false`: forzare `mode` sempre su `"leaderboard"`, saltare tutta la logica di timer video/stall watchdog, e nascondere il pannello video (o non montarlo affatto).
+- Quando `video === true`: comportamento attuale invariato (alternanza 20s classifica / 10s video).
 
-1. Limitare visivamente il riquadro classifica a circa 10 righe su desktop
-   - Mantengo almeno 10 nomi visibili come richiesto.
-   - Le righe oltre la decima andranno fuori dal riquadro e creeranno overflow reale.
-
-2. Rendere l’auto-scroll dipendente da `data.length > 10`
-   - Se ci sono 10 o meno partecipanti, niente animazione.
-   - Se ci sono più di 10 partecipanti, la lista scorre automaticamente su e giù.
-
-3. Calcolare lo scroll in modo affidabile
-   - Uso le misure reali del contenuto e del contenitore.
-   - Mantengo `ResizeObserver`, ma faccio in modo che il contenitore abbia un’altezza stabile, così `scrollHeight - clientHeight` produce una distanza positiva quando ci sono più di 10 righe.
-
-4. Verificare in preview
-   - Test desktop 1920×1080: devono vedersi 10 righe circa e la classifica deve muoversi verticalmente.
-   - Controllo anche che il timer leaderboard/video resti invariato: classifica 20s, video 15s.
+Questo permette di usare `/?video=true` per attivare il video e lasciare l'URL senza parametro (default) per mostrare solo la classifica.
