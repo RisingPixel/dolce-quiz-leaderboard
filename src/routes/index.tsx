@@ -124,12 +124,12 @@ function Leaderboard() {
       >
       <header className="text-center">
         <h1
-          className="font-display text-7xl xl:text-8xl tracking-wide text-[var(--cream)]"
+          className="font-display text-6xl xl:text-7xl tracking-wide text-[var(--cream)]"
           style={{ textShadow: "0 2px 30px oklch(0.18 0.04 190 / 0.7)" }}
         >
           La Dolce <span className="italic text-[var(--gold)]">Quiz</span>
         </h1>
-        <p className="font-display text-3xl xl:text-4xl text-[var(--cream)]/80 italic mt-1">
+        <p className="font-display text-2xl xl:text-3xl text-[var(--cream)]/80 italic mt-1">
           Classifica Evento
         </p>
         <div className="mx-auto mt-4 h-px w-72 bg-gradient-to-r from-transparent via-[var(--gold)]/60 to-transparent" />
