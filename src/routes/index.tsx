@@ -118,7 +118,7 @@ function Leaderboard() {
       {/* Leaderboard panel */}
       <main
         className={[
-          "absolute inset-0 px-12 py-10 flex flex-col gap-8 transition-opacity duration-700",
+          "absolute inset-0 px-12 py-6 flex flex-col gap-4 transition-opacity duration-700",
           mode === "leaderboard" ? "opacity-100" : "opacity-0 pointer-events-none",
         ].join(" ")}
       >
