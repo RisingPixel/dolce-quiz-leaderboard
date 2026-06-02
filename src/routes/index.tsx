@@ -88,42 +88,114 @@ function Leaderboard() {
     };
   }, []);
 
+  // Check whether the video has enough buffered data from currentTime to play
+  // for `seconds` without re-buffering.
+  const hasEnoughBuffered = (video: HTMLVideoElement, seconds: number) => {
+    const needed = Math.min(seconds, (video.duration || seconds) - video.currentTime);
+    for (let i = 0; i < video.buffered.length; i++) {
+      const start = video.buffered.start(i);
+      const end = video.buffered.end(i);
+      if (start <= video.currentTime + 0.1 && end >= video.currentTime + needed - 0.1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Mode timer: leaderboard → video (only if buffered enough), video → leaderboard.
   useEffect(() => {
     let cancelled = false;
+    const cleanups: Array<() => void> = [];
     const duration = mode === "leaderboard" ? LEADERBOARD_MS : VIDEO_MS;
+
     const timer = setTimeout(() => {
       if (cancelled) return;
-      // If we're about to show the video but it's not buffered yet, wait for it
-      if (mode === "leaderboard" && !videoReadyRef.current) {
+
+      if (mode === "leaderboard") {
         const video = videoRef.current;
-        if (video) {
-          const onReady = () => {
-            video.removeEventListener("canplaythrough", onReady);
-            video.removeEventListener("canplay", onReady);
-            if (!cancelled) setMode("video");
-          };
-          video.addEventListener("canplaythrough", onReady);
-          video.addEventListener("canplay", onReady);
+        const videoSeconds = VIDEO_MS / 1000;
+        const ready =
+          !!video &&
+          (video.readyState >= 4 || hasEnoughBuffered(video, videoSeconds));
+        if (ready) {
+          setMode("video");
           return;
         }
+        // Not ready — wait for it to buffer enough, then switch.
+        if (!video) return;
+        const onProgress = () => {
+          if (cancelled) return;
+          if (video.readyState >= 4 || hasEnoughBuffered(video, videoSeconds)) {
+            cleanups.forEach((fn) => fn());
+            if (!cancelled) setMode("video");
+          }
+        };
+        video.addEventListener("progress", onProgress);
+        video.addEventListener("canplaythrough", onProgress);
+        cleanups.push(() => {
+          video.removeEventListener("progress", onProgress);
+          video.removeEventListener("canplaythrough", onProgress);
+        });
+        return;
       }
-      setMode((m) => (m === "leaderboard" ? "video" : "leaderboard"));
+
+      // mode === "video" → back to leaderboard
+      setMode("leaderboard");
     }, duration);
+
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      cleanups.forEach((fn) => fn());
     };
   }, [mode]);
 
+  // Play / pause + stall watchdog while in video mode.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (mode === "video") {
-      video.play().catch((e) => console.error("[promo] autoplay blocked:", e));
-    } else {
+
+    if (mode !== "video") {
       video.pause();
+      return;
     }
+
+    video.play().catch((e) => console.error("[promo] autoplay blocked:", e));
+
+    // If playback stalls for more than VIDEO_STALL_TIMEOUT_MS, bail back to leaderboard.
+    let stallTimer: ReturnType<typeof setTimeout> | null = null;
+    const clearStall = () => {
+      if (stallTimer) {
+        clearTimeout(stallTimer);
+        stallTimer = null;
+      }
+    };
+    const armStall = () => {
+      clearStall();
+      stallTimer = setTimeout(() => {
+        console.warn("[promo] video stalled >3s, falling back to leaderboard");
+        setMode("leaderboard");
+      }, VIDEO_STALL_TIMEOUT_MS);
+    };
+    const onWaiting = () => armStall();
+    const onStalled = () => armStall();
+    const onPlaying = () => clearStall();
+    const onTimeUpdate = () => clearStall();
+
+    video.addEventListener("waiting", onWaiting);
+    video.addEventListener("stalled", onStalled);
+    video.addEventListener("playing", onPlaying);
+    video.addEventListener("timeupdate", onTimeUpdate);
+
+    return () => {
+      clearStall();
+      video.removeEventListener("waiting", onWaiting);
+      video.removeEventListener("stalled", onStalled);
+      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("timeupdate", onTimeUpdate);
+    };
   }, [mode]);
+
 
 
   useEffect(() => {
