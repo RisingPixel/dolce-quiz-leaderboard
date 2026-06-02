@@ -39,6 +39,9 @@ async function fetchTop20(): Promise<Entry[]> {
 }
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    video: search.video === true || search.video === "true",
+  }),
   head: () => ({
     meta: [
       { title: "La Dolce Quiz — Classifica Evento" },
